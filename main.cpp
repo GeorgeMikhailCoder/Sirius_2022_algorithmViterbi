@@ -20,11 +20,20 @@ Matrix& operator*(const double a, const Matrix& R)
 int main(int argc, char const *argv[])
 {
     string fileName = "RM_32_16";
-    Matrix A("Data/"+fileName+".gen");
-    AlgorithmViterbi::spen(A);
-    cout<<A<<endl;    
-    A.toFile("Data/"+fileName+"_spen.gen");
+    // Matrix A("Data/"+fileName+".gen");
 
+    Matrix A(3,3,true,10);
+
+    cout<<A<<endl;    
+
+    Matrix B = AlgorithmViterbi::binMatrix(3);
+    B.eraseRows(3,B.getRows());
+
+    cout<<B<<endl;
+
+    cout<<A.appendCols(B)<<endl;
+
+    // A.toFile("Data/"+fileName+"_spen.gen");
     return 0;
 }
 

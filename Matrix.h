@@ -133,7 +133,6 @@ public:
         return *res;
     }
 
-
     Matrix& erase(int rs=-1, int rf=-1, int cs=-1, int cf=-1)
     {
         if(rs>=rows || rf > rows || cs >= cols || cf > cols || rs > rf || cs > cf) // = для последних?
@@ -222,7 +221,7 @@ public:
     }
 
     Matrix& appendCols(Matrix& colsMatrix, int c = -1)
-    {
+    {// wrong work
         if(c>cols || c < -1)
             throw("Matrix appendCols: incorrect col number");
         if(rows != colsMatrix.getRows())
@@ -231,35 +230,42 @@ public:
         if(c==-1) 
             c = cols;
 
+        Matrix old(*this);
+        int oldCols = cols;
+        
+        int j_old=0;
+        int j_new=0;
 
-        double **prevMass = mass;
-        int prevRows = rows;
-        int prevCols = cols;
-
+        for(int i=0;i<rows;i++)
+            delete []mass[i];
+        delete []mass;
 
         cols += colsMatrix.getCols();
-
-        int j_prev(0), j_new(0);
+        
         mass = new double*[rows];
         for(int i=0;i<rows;i++)
-            {
-                mass[i] = new double[cols];
-                for(int j=0;j<cols;j++)
-                    if(j<c || j>=c+colsMatrix.getCols())
-                    {
-                        mass[i][j] = prevMass[i][j_prev];
-                        j_prev++;
-                    }
-                    else
-                    {
-                        mass[i][j] = colsMatrix(i,j_new);
-                        j_new++;
-                    }
-            }
+        {
+            j_old=0;
+            j_new=0;
+            mass[i] = new double[cols];
+            for(int j=0;j<cols;j++)
+                if(j<c)
+                {
+                    mass[i][j]=old(i,j_old);
+                    j_old+=1;
+                }
+                else if(j < c + colsMatrix.getCols())
+                {
+                    mass[i][j] = colsMatrix(i,j_new);
+                    j_new++;
+                }
+                else if(j<cols)
+                {
+                    mass[i][j]=old(i,j_old);
+                    j_old+=1;
+                }
+        }
 
-        for(int i=0;i<rows;i++)
-            delete []prevMass[i];
-        delete []prevMass;
         return *this;
     }
 
