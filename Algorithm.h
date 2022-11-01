@@ -1,5 +1,5 @@
 #include"Matrix.h"
-
+#include"ViterbiVerticle.h"
 
 int pow(const int a, const unsigned int n)
 {
@@ -8,6 +8,8 @@ int pow(const int a, const unsigned int n)
         res*=a;
     return res;
 }
+
+
 
 class AlgorithmViterbi
 {
@@ -168,9 +170,101 @@ public:
         return *resPtr;
     }
 
-    static void smezh_i(const Matrix& smezh_prev, const Matrix& xactmass, bool kst,int xst, bool kend,int xend)
+    static Matrix& getGrid(Matrix& spenG)
     {
+        Matrix mass = getRowsStartEnd(spenG);
+        int maxIndex = spenG.getCols();
+
+        // define count verticles
+        // cout<<mass;
+        // int countVerticles = 1;
+        // int cVlayer = 1;
+        // for(int i=0;i<maxIndex;i++)
+        // {
+        //     bool mul2 = false;
+        //     for(int r=0;r<mass.getRows() && !mul2;r++)
+        //         mul2 |= mass(r,0)==i;
+        //     if(mul2)
+        //         cVlayer*=2;
+        //     bool div2 = false;
+        //     for(int r=0;r<mass.getRows() && !div2;r++)
+        //         div2 |= mass(r,1)==i;
+        //     if(div2)
+        //         cVlayer/=2;
+        //     countVerticles+=cVlayer;      
+        // }
+
+        ViterbiGrid grid(maxIndex + 1);
+
+        int Nact = 0;
+        grid.layers[0] = new ViterbiLayer();
+        grid.layers[0].Nact = 0;
         
+        grid.layers[0].verticles = new ViterbiVerticle();
+
+        
+        int r=0;
+        for(int i = 1;i<grid.numLayers; i++)
+        {
+
+            grid.layers[i] = new ViterbiLayer();
+
+
+            bool startFlag = false;
+            int startXnum=0;
+            for(;startXnum<mass.getRows() && !startFlag;startXnum++)
+                startFlag |= mass(startXnum,0)==i;
+            
+            
+
+            bool endFlag = false;
+            int endXnum=0;
+            for(;endXnum<mass.getRows() && !endFlag;r++)
+                endFlag |= mass(endXnum,1)==i;
+            
+            
+            grid.layers[i].Nact = grid.layers[i-1].Nact + int(startFlag) - int(endFlag);
+
+            int Nact = grid.layers[i].Nact;
+            if(Nact!=0)
+            {
+                grid.layers[i].activeX = new int[Nact];
+
+                for(int j=0;j<grid.layers[i-1].Nact;j++)
+                    if(grid.layers[i].activeX[j] != endXnum)
+                        grid.layers[i].activeX[j] = grid.layers[i].activeX[j];
+                
+                if(startFlag)
+                    grid.layers[i].activeX[Nact-1] = startXnum;
+
+
+                grid.layers[i].verticles = new ViterbiVerticle[pow(2,Nact)];
+                if(!startFlag && !endFlag)
+                {
+                    for(int j=0;j<Nact;j++)
+                        grid.layers[i-1].verticles[j].connectNext(  grid.layers[i].verticles[j]  );
+                    
+                }
+                if(startFlag && !endFlag)
+                {
+                    for(int j=0;j<Nact;j++)
+                        grid.layers[i-1].verticles[j/2].connectNext(   grid.layers[i].verticles[j]  );
+                }
+                if(!startFlag && endFlag)
+                {
+                    // do this
+                }
+                if(startFlag && endFlag)
+                {
+                    // do this
+                }
+            }
+            
+
+        }
+
+        return spenG;
     }
 
 };
+

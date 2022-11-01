@@ -289,6 +289,46 @@ public:
         }
     }
 
+// arifmetic functions
+    Matrix& max(int dim=0)
+    {
+        if(dim!=0 && dim!=1)
+            throw("Matrix max: dim must be 0 or 1");
+        
+        if(dim==0)
+        {
+            Matrix cur(*this);
+            Matrix* res = new Matrix(1,cols);
+            for(int c=0;c<cols;c++)
+            {
+                double curMax = cur(0,c);
+                for(int r=1; r<rows;r++)
+                    if(curMax<cur(r,c))
+                        curMax = cur(r,c);
+                (*res)(0,c) = curMax;
+            }
+            return *res;
+        }
+        else
+        {
+            Matrix cur(*this);
+            Matrix* res = new Matrix(rows,1);
+            for(int r=0;r<rows;r++)
+            {
+                double curMax = cur(r,0);
+                for(int c=1; c<cols;c++)
+                    if(curMax<cur(r,c))
+                        curMax = cur(r,c);
+                (*res)(r,0) = curMax;
+            }
+            return *res;
+        }
+
+        Matrix res(1,cols);
+    }
+
+
+
 // basic class operators
     double operator ()(int r, int c) const
     {
