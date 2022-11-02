@@ -16,7 +16,7 @@ public:
         else if(next[1]==nullptr)
             next[1]=&v;
         else
-            throw("ViterbiVerticle connectNext: next array already full")
+            throw("ViterbiVerticle connectNext: next array already full");
     }
 
 };

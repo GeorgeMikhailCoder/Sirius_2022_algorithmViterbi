@@ -170,58 +170,37 @@ public:
         return *resPtr;
     }
 
-    static Matrix& getGrid(Matrix& spenG)
+    static ViterbiGrid& getGrid(Matrix& spenG)
     {
         Matrix mass = getRowsStartEnd(spenG);
         int maxIndex = spenG.getCols();
 
-        // define count verticles
-        // cout<<mass;
-        // int countVerticles = 1;
-        // int cVlayer = 1;
-        // for(int i=0;i<maxIndex;i++)
-        // {
-        //     bool mul2 = false;
-        //     for(int r=0;r<mass.getRows() && !mul2;r++)
-        //         mul2 |= mass(r,0)==i;
-        //     if(mul2)
-        //         cVlayer*=2;
-        //     bool div2 = false;
-        //     for(int r=0;r<mass.getRows() && !div2;r++)
-        //         div2 |= mass(r,1)==i;
-        //     if(div2)
-        //         cVlayer/=2;
-        //     countVerticles+=cVlayer;      
-        // }
+        cout<<spenG;
+        cout<<mass;
 
         ViterbiGrid grid(maxIndex + 1);
 
         int Nact = 0;
-        grid.layers[0] = new ViterbiLayer();
+        grid.layers[0].verticles = new ViterbiVerticle();
         grid.layers[0].Nact = 0;
         
-        grid.layers[0].verticles = new ViterbiVerticle();
 
         
-        int r=0;
         for(int i = 1;i<grid.numLayers; i++)
         {
-
-            grid.layers[i] = new ViterbiLayer();
-
 
             bool startFlag = false;
             int startXnum=0;
             for(;startXnum<mass.getRows() && !startFlag;startXnum++)
-                startFlag |= mass(startXnum,0)==i;
-            
+                startFlag |= mass(startXnum,0)==i-1;
+            startXnum--;
             
 
             bool endFlag = false;
             int endXnum=0;
-            for(;endXnum<mass.getRows() && !endFlag;r++)
-                endFlag |= mass(endXnum,1)==i;
-            
+            for(;endXnum<mass.getRows() && !endFlag;endXnum++)
+                endFlag |= mass(endXnum,1)==i-1;
+            endXnum--;
             
             grid.layers[i].Nact = grid.layers[i-1].Nact + int(startFlag) - int(endFlag);
 
@@ -238,32 +217,47 @@ public:
                     grid.layers[i].activeX[Nact-1] = startXnum;
 
 
-                grid.layers[i].verticles = new ViterbiVerticle[pow(2,Nact)];
+                int Nverticles = pow(2,Nact);
+                grid.layers[i].verticles = new ViterbiVerticle[Nverticles];
+                
                 if(!startFlag && !endFlag)
                 {
-                    for(int j=0;j<Nact;j++)
+                    for(int j=0;j<Nverticles;j++)
                         grid.layers[i-1].verticles[j].connectNext(  grid.layers[i].verticles[j]  );
                     
                 }
                 if(startFlag && !endFlag)
                 {
-                    for(int j=0;j<Nact;j++)
-                        grid.layers[i-1].verticles[j/2].connectNext(   grid.layers[i].verticles[j]  );
+                    for(int j=0;j<Nverticles;j++)
+                        grid.layers[i-1].verticles[int(j/2)].connectNext(   grid.layers[i].verticles[j]  );
                 }
                 if(!startFlag && endFlag)
                 {
-                    // do this
+                    for(int j=0;j<2*Nverticles;j++)
+                    {
+                        int j_old = j;
+                        int magicN = Nverticles / pow(2,endXnum);
+                        int j_new = (2 * j_old) % magicN + int(j_old / magicN) * magicN;
+                        grid.layers[i-1].verticles[j_old].connectNext(  grid.layers[i].verticles[j_new]  );
+                    }
                 }
                 if(startFlag && endFlag)
                 {
-                    // do this
+                    for(int j=0;j<2*Nverticles;j++)
+                    {
+                        int j_old = j % Nverticles;
+                        int magicN = Nverticles / pow(2,endXnum); // endNum = 0...
+                        int j_new = (2 * j_old) % magicN + int(j_old / magicN) * magicN  +  int(j_old/Nverticles);
+                        grid.layers[i-1].verticles[j_old].connectNext(  grid.layers[i].verticles[j_new]  );
+                    }
+
                 }
             }
             
 
         }
 
-        return spenG;
+        return grid;
     }
 
 };

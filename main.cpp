@@ -22,9 +22,7 @@ int main(int argc, char const *argv[])
     string fileName = "RM_6_3";
     Matrix A("Data/"+fileName+".gen");
     AlgorithmViterbi::spen(A);
-    cout<<A;
-    AlgorithmViterbi::getGrid(A);
-    ViterbiVerticle F;
+    ViterbiGrid grid = AlgorithmViterbi::getGrid(A);
     A.toFile("Data/"+fileName+"_spen.gen");
     return 0;
 }
