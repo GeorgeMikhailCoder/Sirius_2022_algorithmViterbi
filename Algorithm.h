@@ -1,5 +1,5 @@
 #include"Matrix.h"
-
+#include"ViterbiVerticle.h"
 
 int pow(const int a, const unsigned int n)
 {
@@ -8,6 +8,8 @@ int pow(const int a, const unsigned int n)
         res*=a;
     return res;
 }
+
+
 
 class AlgorithmViterbi
 {
@@ -168,9 +170,95 @@ public:
         return *resPtr;
     }
 
-    static void smezh_i(const Matrix& smezh_prev, const Matrix& xactmass, bool kst,int xst, bool kend,int xend)
+    static ViterbiGrid& getGrid(Matrix& spenG)
     {
+        Matrix mass = getRowsStartEnd(spenG);
+        int maxIndex = spenG.getCols();
+
+        cout<<spenG;
+        cout<<mass;
+
+        ViterbiGrid grid(maxIndex + 1);
+
+        int Nact = 0;
+        grid.layers[0].verticles = new ViterbiVerticle();
+        grid.layers[0].Nact = 0;
         
+
+        
+        for(int i = 1;i<grid.numLayers; i++)
+        {
+
+            bool startFlag = false;
+            int startXnum=0;
+            for(;startXnum<mass.getRows() && !startFlag;startXnum++)
+                startFlag |= mass(startXnum,0)==i-1;
+            startXnum--;
+            
+
+            bool endFlag = false;
+            int endXnum=0;
+            for(;endXnum<mass.getRows() && !endFlag;endXnum++)
+                endFlag |= mass(endXnum,1)==i-1;
+            endXnum--;
+            
+            grid.layers[i].Nact = grid.layers[i-1].Nact + int(startFlag) - int(endFlag);
+
+            int Nact = grid.layers[i].Nact;
+            if(Nact!=0)
+            {
+                grid.layers[i].activeX = new int[Nact];
+
+                for(int j=0;j<grid.layers[i-1].Nact;j++)
+                    if(grid.layers[i].activeX[j] != endXnum)
+                        grid.layers[i].activeX[j] = grid.layers[i].activeX[j];
+                
+                if(startFlag)
+                    grid.layers[i].activeX[Nact-1] = startXnum;
+
+
+                int Nverticles = pow(2,Nact);
+                grid.layers[i].verticles = new ViterbiVerticle[Nverticles];
+                
+                if(!startFlag && !endFlag)
+                {
+                    for(int j=0;j<Nverticles;j++)
+                        grid.layers[i-1].verticles[j].connectNext(  grid.layers[i].verticles[j]  );
+                    
+                }
+                if(startFlag && !endFlag)
+                {
+                    for(int j=0;j<Nverticles;j++)
+                        grid.layers[i-1].verticles[int(j/2)].connectNext(   grid.layers[i].verticles[j]  );
+                }
+                if(!startFlag && endFlag)
+                {
+                    for(int j=0;j<2*Nverticles;j++)
+                    {
+                        int j_old = j;
+                        int magicN = Nverticles / pow(2,endXnum);
+                        int j_new = (2 * j_old) % magicN + int(j_old / magicN) * magicN;
+                        grid.layers[i-1].verticles[j_old].connectNext(  grid.layers[i].verticles[j_new]  );
+                    }
+                }
+                if(startFlag && endFlag)
+                {
+                    for(int j=0;j<2*Nverticles;j++)
+                    {
+                        int j_old = j % Nverticles;
+                        int magicN = Nverticles / pow(2,endXnum); // endNum = 0...
+                        int j_new = (2 * j_old) % magicN + int(j_old / magicN) * magicN  +  int(j_old/Nverticles);
+                        grid.layers[i-1].verticles[j_old].connectNext(  grid.layers[i].verticles[j_new]  );
+                    }
+
+                }
+            }
+            
+
+        }
+
+        return grid;
     }
 
 };
+
