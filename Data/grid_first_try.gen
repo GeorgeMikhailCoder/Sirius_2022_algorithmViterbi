@@ -1,0 +1,32 @@
+grid start
+layers count 7
+
+layer 0: Nact=0, active X = [Verticle 0: my adress = 0x5555555700e0, next_1 = 0x555555570120, next_2 = 0x555555570130
+
+layer 1: Nact=1, active X = [0]
+Verticle 0: my adress = 0x555555570120, next_1 = 0x555555570170, next_2 = 0x555555570180
+Verticle 1: my adress = 0x555555570130, next_1 = 0x555555570190, next_2 = 0x5555555701a0
+
+layer 2: Nact=2, active X = [-138007584, 1]
+Verticle 0: my adress = 0x555555570170, next_1 = 0x5555555701e0, next_2 = 0
+Verticle 1: my adress = 0x555555570180, next_1 = 0x5555555701f0, next_2 = 0
+Verticle 2: my adress = 0x555555570190, next_1 = 0x555555570200, next_2 = 0
+Verticle 3: my adress = 0x5555555701a0, next_1 = 0x555555570210, next_2 = 0
+
+layer 3: Nact=2, active X = [-138007584, 32767]
+Verticle 0: my adress = 0x5555555701e0, next_1 = 0x555555570250, next_2 = 0x555555570250
+Verticle 1: my adress = 0x5555555701f0, next_1 = 0x555555570270, next_2 = 0x555555570270
+Verticle 2: my adress = 0x555555570200, next_1 = 0x555555570250, next_2 = 0x555555570250
+Verticle 3: my adress = 0x555555570210, next_1 = 0x555555570270, next_2 = 0x555555570270
+
+layer 4: Nact=2, active X = [-138007584, 2]
+Verticle 0: my adress = 0x555555570250, next_1 = 0x5555555702c0, next_2 = 0
+Verticle 1: my adress = 0x555555570260, next_1 = 0x5555555702d0, next_2 = 0
+Verticle 2: my adress = 0x555555570270, next_1 = 0x5555555702c0, next_2 = 0
+Verticle 3: my adress = 0x555555570280, next_1 = 0x5555555702d0, next_2 = 0
+
+layer 5: Nact=1, active X = [-138007584]
+Verticle 0: my adress = 0x5555555702c0, next_1 = 0x555555570310, next_2 = 0
+Verticle 1: my adress = 0x5555555702d0, next_1 = 0x555555570320, next_2 = 0
+
+layer 6: Nact=0, active X = [Verticle 0: my adress = 0x555555570310, next_1 = 0, next_2 = 0

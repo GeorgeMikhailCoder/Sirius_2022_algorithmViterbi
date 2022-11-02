@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
     Matrix A("Data/"+fileName+".gen");
     AlgorithmViterbi::spen(A);
     ViterbiGrid grid = AlgorithmViterbi::getGrid(A);
+    grid.toFile("Data/grid.gen");
     A.toFile("Data/"+fileName+"_spen.gen");
     return 0;
 }
